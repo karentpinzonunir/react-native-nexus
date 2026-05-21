@@ -4,21 +4,20 @@ import {
     Text,
     FlatList,
     ActivityIndicator,
+    Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
-import { useBooks } from '../hooks/useBooks';
-import BookCard from '../components/BookCard';
+import { router } from 'expo-router';
+import { AuthContext } from '../../context/AuthContext';
+import { useBooks } from '../../hooks/useBooks';
+import BookCard from '../../components/BookCard';
 
 export default function MyBooksScreen() {
     const { user } = useContext(AuthContext);
     const { getMyBooks, loading, error, books } = useBooks();
     const [myBooks, setMyBooks] = useState([]);
     const [myPurchases, setMyPurchases] = useState([]);
-    const navigation = useNavigation();
 
-    // Trae las compras del usuario desde la API
     useEffect(() => {
         const fetchMyBooks = async () => {
             if (user) {
@@ -29,7 +28,6 @@ export default function MyBooksScreen() {
         fetchMyBooks();
     }, [user]);
 
-    // Cruza las compras con el listado de libros
     useEffect(() => {
         if (user && books.length > 0 && myPurchases.length > 0) {
             const filtered = books.filter((book) =>
@@ -50,12 +48,12 @@ export default function MyBooksScreen() {
                 <Text className="font-inter text-muted text-sm text-center mb-6">
                     Necesitas iniciar sesión para ver tus libros.
                 </Text>
-                <View
-                    onTouchEnd={() => navigation.navigate('Login')}
+                <Pressable
+                    onPress={() => router.replace('/')}
                     className="bg-primary px-6 py-3 rounded-nexus"
                 >
                     <Text className="text-white font-interBold">Ir al Login</Text>
-                </View>
+                </Pressable>
             </SafeAreaView>
         );
     }
@@ -99,9 +97,7 @@ export default function MyBooksScreen() {
                         book={item}
                         siCarrito={false}
                         detailPurchase={myPurchases.find((p) => p.bookId === item.id)}
-                        onPress={(book) =>
-                            navigation.navigate('BookDetail', { bookId: book.id })
-                        }
+                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 ListEmptyComponent={

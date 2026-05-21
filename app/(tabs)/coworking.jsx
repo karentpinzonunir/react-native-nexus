@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import CoWorkingCard from '../components/CoWorkingCard';
-import { useCoworking } from '../hooks/useCoworking';
+import { router } from 'expo-router';
+import CoWorkingCard from '../../components/CoWorkingCard';
+import { useCoworking } from '../../hooks/useCoworking';
 
 export default function CoWorkingScreen() {
-    const navigation = useNavigation();
     const { coworkings, loading, error, getCoworkings } = useCoworking();
 
     const freeSpaces = getCoworkings(false);
@@ -47,7 +46,7 @@ export default function CoWorkingScreen() {
                         <CoWorkingCard
                             key={space.id}
                             coworking={space}
-                            onPress={(s) => navigation.navigate('CoWorkingDetail', { id: s.id })}
+                            onPress={(s) => router.push(`/(tabs)/(stack)/coworking/${s.id}`)}
                         />
                     ))}
                 </View>
@@ -71,7 +70,7 @@ export default function CoWorkingScreen() {
                         <CoWorkingCard
                             key={space.id}
                             coworking={space}
-                            onPress={(s) => navigation.navigate('CoWorkingDetail', { id: s.id })}
+                            onPress={(s) => router.push(`/(tabs)/(stack)/coworking/${s.id}`)}
                         />
                     ))}
                 </View>

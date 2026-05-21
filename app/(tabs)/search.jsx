@@ -6,11 +6,11 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useBooks } from '../hooks/useBooks';
-import BookCard from '../components/BookCard';
-import CategoriaSelector from '../components/CategoriaSelector';
-import FormSearchBook from '../components/FormSearchBook';
+import { router } from 'expo-router';
+import { useBooks } from '../../hooks/useBooks';
+import BookCard from '../../components/BookCard';
+import CategoriaSelector from '../../components/CategoriaSelector';
+import FormSearchBook from '../../components/FormSearchBook';
 
 export default function SearchScreen() {
     const {
@@ -20,7 +20,6 @@ export default function SearchScreen() {
         searching,
     } = useBooks();
 
-    const navigation = useNavigation();
     const { categoriaId } = paramSearch;
 
     const changeCategoriaId = (newCategoriaId) => {
@@ -74,9 +73,7 @@ export default function SearchScreen() {
                 renderItem={({ item }) => (
                     <BookCard
                         book={item}
-                        onPress={(book) =>
-                            navigation.navigate('BookDetail', { bookId: book.id })
-                        }
+                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 ListEmptyComponent={

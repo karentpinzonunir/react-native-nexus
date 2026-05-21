@@ -6,13 +6,12 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useBooks } from '../hooks/useBooks';
-import BookCard from '../components/BookCard';
+import { router } from 'expo-router';
+import { useBooks } from '../../../hooks/useBooks';
+import BookCard from '../../../components/BookCard';
 
 export default function HomeScreen() {
     const { topTenbooks, loading, error } = useBooks();
-    const navigation = useNavigation();
 
     return (
         <SafeAreaView className="flex-1 bg-bgLight">
@@ -51,9 +50,7 @@ export default function HomeScreen() {
                 renderItem={({ item }) => (
                     <BookCard
                         book={item}
-                        onPress={(book) =>
-                            navigation.navigate('BookDetail', { bookId: book.id })
-                        }
+                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 contentContainerStyle={{ paddingBottom: 20 }}

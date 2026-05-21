@@ -7,27 +7,25 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { useBooks } from '../hooks/useBooks';
+import { useBooks } from '../../../../hooks/useBooks';
 
 export default function BookDetailScreen() {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { bookId } = route.params;
+    const { id } = useLocalSearchParams();
     const { getBookById, error } = useBooks();
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchBook = async () => {
-            const data = await getBookById(bookId);
+            const data = await getBookById(id);
             setBook(data);
             setLoading(false);
         };
         fetchBook();
-    }, [bookId]);
+    }, [id]);
 
     // Loading
     if (loading) {
@@ -57,7 +55,7 @@ export default function BookDetailScreen() {
                 <Pressable
                     onPress={() => {
                         Haptics.selectionAsync();
-                        navigation.goBack();
+                        router.back();
                     }}
                     className="bg-primary px-6 py-3 rounded-nexus"
                 >
@@ -79,7 +77,7 @@ export default function BookDetailScreen() {
                 <Pressable
                     onPress={() => {
                         Haptics.selectionAsync();
-                        navigation.goBack();
+                        router.back();
                     }}
                     className="flex-row items-center px-4 pt-4 pb-2"
                 >

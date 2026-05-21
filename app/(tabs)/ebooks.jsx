@@ -6,10 +6,10 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useBooks } from '../hooks/useBooks';
-import BookCard from '../components/BookCard';
-import CategoriaSelector from '../components/CategoriaSelector';
+import { router } from 'expo-router';
+import { useBooks } from '../../hooks/useBooks';
+import BookCard from '../../components/BookCard';
+import CategoriaSelector from '../../components/CategoriaSelector';
 
 export default function EBooksScreen() {
     const {
@@ -19,8 +19,6 @@ export default function EBooksScreen() {
         categoriaId,
         changeCategoriaId,
     } = useBooks();
-
-    const navigation = useNavigation();
 
     return (
         <SafeAreaView className="flex-1 bg-bgLight">
@@ -70,9 +68,7 @@ export default function EBooksScreen() {
                 renderItem={({ item }) => (
                     <BookCard
                         book={item}
-                        onPress={(book) =>
-                            navigation.navigate('BookDetail', { bookId: book.id })
-                        }
+                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 ListEmptyComponent={
