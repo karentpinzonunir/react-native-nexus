@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { useCoworking } from '../../../../hooks/useCoworking'
+import { useCoworking } from '../../../../hooks/useCoworking';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function CoWorkingDetailScreen() {
@@ -51,16 +51,7 @@ export default function CoWorkingDetailScreen() {
     return (
         <SafeAreaView className="flex-1 bg-bgLight">
             <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-                <Pressable
-                    onPress={() => {
-                        Haptics.selectionAsync();
-                        router.back();
-                    }}
-                    className="flex-row items-center px-4 pt-4 pb-2"
-                >
-                    <Ionicons name="arrow-back" size={20} color="#4f46e5" />
-                    <Text className="font-interBold text-primary text-sm ml-1">Volver</Text>
-                </Pressable>
+                
 
                 <View className="mx-4 bg-card rounded-nexus shadow-nexus p-5">
                     <Text className="font-headingBold text-secondary text-2xl mb-2">

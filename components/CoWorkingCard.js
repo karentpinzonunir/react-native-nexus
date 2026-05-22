@@ -1,20 +1,19 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
 const CoWorkingCard = ({ coworking }) => {
-    const navigation = useNavigation();
+    const router = useRouter();
     const isOccupied = coworking.ocupado;
 
+    const handlePress = () => {
+        Haptics.selectionAsync();
+        router.replace(`/(tabs)/(stack)/coworking/${coworking.id}`);
+    };
+
     return (
-        <Pressable
-            onPress={() => {
-                Haptics.selectionAsync();
-                navigation.navigate('CoWorkingDetail', { id: coworking.id });
-            }}
-            className="mx-4 mb-4 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
-        >
+        <View className="mx-4 mb-4 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             {/* Header con nombre y estado */}
             <View className={`p-4 ${isOccupied ? 'bg-red-50' : 'bg-emerald-50'}`}>
                 <View className="flex-row justify-between items-start">
@@ -22,10 +21,7 @@ const CoWorkingCard = ({ coworking }) => {
                         {coworking.nombre || `Espacio ${coworking.id}`}
                     </Text>
                     <View className="ml-2">
-                        <View
-                            className={`w-3 h-3 rounded-full ${isOccupied ? 'bg-red-500' : 'bg-emerald-500'
-                                }`}
-                        />
+                        <View className={`w-3 h-3 rounded-full ${isOccupied ? 'bg-red-500' : 'bg-emerald-500'}`} />
                     </View>
                 </View>
             </View>
@@ -62,10 +58,7 @@ const CoWorkingCard = ({ coworking }) => {
 
                 {/* Acción */}
                 <Pressable
-                    onPress={() => {
-                        Haptics.selectionAsync();
-                        navigation.navigate('CoWorkingDetail', { id: coworking.id });
-                    }}
+                    onPress={handlePress}
                     className="mt-4 py-2 bg-primary rounded-lg items-center"
                 >
                     <Text className="font-interBold text-white text-sm">
@@ -73,7 +66,7 @@ const CoWorkingCard = ({ coworking }) => {
                     </Text>
                 </Pressable>
             </View>
-        </Pressable>
+        </View>
     );
 };
 

@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { useBooks } from '../../../../hooks/useBooks';
+import { useBooks } from '../../../../hooks/useBooks'; // ← corregido
 
 export default function BookDetailScreen() {
     const { id } = useLocalSearchParams();
@@ -27,7 +27,6 @@ export default function BookDetailScreen() {
         fetchBook();
     }, [id]);
 
-    // Loading
     if (loading) {
         return (
             <SafeAreaView className="flex-1 bg-bgLight items-center justify-center">
@@ -39,7 +38,6 @@ export default function BookDetailScreen() {
         );
     }
 
-    // Error o no encontrado
     if (!book || error) {
         return (
             <SafeAreaView className="flex-1 bg-bgLight items-center justify-center px-6">
@@ -73,32 +71,13 @@ export default function BookDetailScreen() {
                 contentContainerStyle={{ paddingBottom: 40 }}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Botón volver */}
-                <Pressable
-                    onPress={() => {
-                        Haptics.selectionAsync();
-                        router.back();
-                    }}
-                    className="flex-row items-center px-4 pt-4 pb-2"
-                >
-                    <Ionicons name="arrow-back" size={20} color="#4f46e5" />
-                    <Text className="font-interBold text-primary text-sm ml-1">
-                        Volver
-                    </Text>
-                </Pressable>
 
-                {/* Contenedor principal */}
                 <View className="mx-4 bg-card rounded-nexus shadow-nexus p-5">
-
-                    {/* Título */}
                     <Text className="font-headingBold text-secondary text-2xl mb-4">
                         {book.titulo}
                     </Text>
 
-                    {/* Grid de info */}
                     <View className="gap-4">
-
-                        {/* Autor */}
                         <View className="bg-bgLight rounded-lg p-4">
                             <Text className="font-interBold text-muted text-xs uppercase mb-1">
                                 Autor
@@ -108,7 +87,6 @@ export default function BookDetailScreen() {
                             </Text>
                         </View>
 
-                        {/* Precio */}
                         <View className="bg-bgLight rounded-lg p-4">
                             <Text className="font-interBold text-muted text-xs uppercase mb-1">
                                 Precio
@@ -118,7 +96,6 @@ export default function BookDetailScreen() {
                             </Text>
                         </View>
 
-                        {/* Descripción */}
                         <View className="bg-bgLight rounded-lg p-4">
                             <Text className="font-interBold text-muted text-xs uppercase mb-1">
                                 Descripción del Libro
@@ -127,10 +104,8 @@ export default function BookDetailScreen() {
                                 {book.descripcion}
                             </Text>
                         </View>
-
                     </View>
 
-                    {/* Botón agregar al carrito */}
                     <Pressable
                         onPress={() => {
                             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -142,7 +117,6 @@ export default function BookDetailScreen() {
                             Agregar al carrito
                         </Text>
                     </Pressable>
-
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { useBooks } from '../../../hooks/useBooks';
-import BookCard from '../../../components/BookCard';
+import { useBooks } from '../../hooks/useBooks';
+import BookCard from '../../components/BookCard';
 
 export default function HomeScreen() {
     const { topTenbooks, loading, error } = useBooks();
@@ -50,7 +50,7 @@ export default function HomeScreen() {
                 renderItem={({ item }) => (
                     <BookCard
                         book={item}
-                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
+                        onPress={(book) => router.replace(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 contentContainerStyle={{ paddingBottom: 20 }}

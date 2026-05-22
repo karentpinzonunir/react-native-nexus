@@ -68,7 +68,7 @@ export default function EBooksScreen() {
                 renderItem={({ item }) => (
                     <BookCard
                         book={item}
-                        onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
+                        onPress={(book) => router.replace(`/(tabs)/(stack)/books/${book.id}`)}
                     />
                 )}
                 ListEmptyComponent={
