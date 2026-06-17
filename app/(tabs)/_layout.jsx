@@ -11,11 +11,10 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: "#4f46e5",
         tabBarInactiveTintColor: "gray",
-        // Calculamos la altura dinámicamente sumando el "inset" inferior del celular
         tabBarStyle: {
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
-          backgroundColor: "#ffffff", // Asegúrate de darle un fondo para que no se vea transparente
+          backgroundColor: "#ffffff",
         },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
@@ -27,8 +26,8 @@ export default function TabsLayout() {
             iconName = focused ? "book" : "book-outline";
           else if (route.name === "coworking")
             iconName = focused ? "people" : "people-outline";
-          else if (route.name === "mybooks")
-            iconName = focused ? "library" : "library-outline";
+          else if (route.name === "reservations")
+            iconName = focused ? "calendar" : "calendar-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -37,7 +36,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="search" options={{ title: "Buscar" }} />
       <Tabs.Screen name="ebooks" options={{ title: "Tienda" }} />
       <Tabs.Screen name="coworking" options={{ title: "Cowork" }} />
-      <Tabs.Screen name="mybooks" options={{ title: "Mis Libros" }} />
+      <Tabs.Screen name="reservations" options={{ title: "Mis Reservas" }} />
       <Tabs.Screen name="(stack)" options={{ href: null }} />
     </Tabs>
   );
