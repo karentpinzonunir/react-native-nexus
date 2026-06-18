@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { AuthProvider } from "../context/AuthContext";
 import { ReservationsProvider } from '../context/ReservationsContext';
+import { CoworkingProvider } from '../context/CoworkingContext';
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -23,12 +24,14 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ReservationsProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </ReservationsProvider>
+      <CoworkingProvider>
+        <ReservationsProvider>       
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </ReservationsProvider>
+      </CoworkingProvider>
     </AuthProvider>
   );
 }

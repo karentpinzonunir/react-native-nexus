@@ -30,7 +30,7 @@ export default function SearchScreen() {
           <View>
             {/* Header */}
             <View className="px-4 pt-6 pb-4">
-              <Text className="font-headingBold text-secondary text-2xl mb-1">
+              <Text className="font-headingBold text-secondary text-3xl mb-1">
                 Busca tu E-Book favorito
               </Text>
               {!searching && (
@@ -64,7 +64,10 @@ export default function SearchScreen() {
         renderItem={({ item }) => (
           <BookCard
             book={item}
-            onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
+            onPress={(book) => router.push({
+              pathname: `/books/${book.id}`,
+              params: { from: 'search' }
+            })}
           />
         )}
         ListEmptyComponent={
@@ -84,6 +87,6 @@ export default function SearchScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
       />
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }

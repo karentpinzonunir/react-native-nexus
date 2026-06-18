@@ -63,7 +63,7 @@ const BookCard = ({
             Precio
           </Text>
           <Text className="text-indigo-600 font-extrabold text-base">
-            $us {book?.price || "0.00"}
+            $ {book?.price || "0.00"}
           </Text>
         </View>
       </View>
@@ -112,13 +112,6 @@ const BookCard = ({
           </Pressable>
         )}
       </View>
-
-      {/* Sin sesión */}
-      {!user && siCarrito && (
-        <Text className="text-gray-400 text-xs text-center mt-2 font-medium">
-          Inicia sesión para comprar
-        </Text>
-      )}
     </View>
   );
 };

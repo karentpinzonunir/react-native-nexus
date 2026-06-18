@@ -17,11 +17,11 @@ export default function EBooksScreen() {
         ListHeaderComponent={
           <View>
             {/* Header */}
-            <View className="px-4 pt-6 pb-2">
-              <Text className="font-headingBold text-secondary text-2xl">
+            <View className="px-4 pt-6 pb-4">
+              <Text className="font-headingBold text-secondary text-3xl mb-1">
                 Explora nuestros <Text className="text-primary">E-Books</Text>
               </Text>
-              <Text className="font-inter text-muted text-sm mt-1">
+              <Text className="font-inter text-muted text-sm">
                 {books.length} títulos disponibles en la categoría seleccionada
               </Text>
             </View>
@@ -58,7 +58,10 @@ export default function EBooksScreen() {
         renderItem={({ item }) => (
           <BookCard
             book={item}
-            onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
+            onPress={(book) => router.push({
+              pathname: `/books/${book.id}`,
+              params: { from: 'ebooks' }
+            })}
           />
         )}
         ListEmptyComponent={

@@ -6,115 +6,153 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
-  Platform
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import * as Haptics from "expo-haptics";
-import * as Calendar from 'expo-calendar'; // Importar Calendario
-import DateTimePicker from '@react-native-community/datetimepicker'; // Importar Picker
-import { useCoworking } from "../../../../hooks/useCoworking";
+import * as Calendar from "expo-calendar";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
+import { useReservations } from "../../../../context/ReservationsContext";
 
 export default function CoWorkingDetailScreen() {
-  const { id } = useLocalSearchParams();
-  const { getDetailsCoWorkingById } = useCoworking();
+  const { data } = useLocalSearchParams();
+  const { addReservation } = useReservations();
   const [space, setSpace] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
-  // Estados para el calendario y fecha
-  const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
-      const data = await getDetailsCoWorkingById(id);
-      setSpace(data);
-      setLoading(false);
-    };
-    load();
-  }, [id]);
+    if (data) {
+      setSpace(JSON.parse(data));
+    }
+  }, [data]);
 
-  // Función para solicitar permisos e insertar en el calendario
+  const handleGoBack = () => {
+    Haptics.selectionAsync();
+    router.push("/coworking");
+  };
+
   const createCalendarEvent = async (selectedDate) => {
     const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === 'granted') {
-      const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-      const defaultCalendar = Platform.OS === 'ios' 
-        ? await Calendar.getDefaultCalendarAsync() 
-        : calendars.find(cal => cal.isPrimary) || calendars[0];
+    if (status !== "granted") {
+      Alert.alert("Permiso denegado", "Necesitamos acceso al calendario.");
+      return;
+    }
 
-      try {
-        const eventId = await Calendar.createEventAsync(defaultCalendar.id, {
-          title: `Reserva Coworking: ${space.nombre}`,
-          startDate: selectedDate,
-          endDate: new Date(selectedDate.getTime() + 60 * 60 * 1000), // 1 hora de duración
-          location: space.location,
-          notes: `Reserva en el espacio de coworking de Nexus. ID: ${space.id}`,
+    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+    const defaultCalendar = calendars.find((cal) => cal.isPrimary) || calendars.find((cal) => cal.allowsModifications) || calendars[0];
+
+    if (!defaultCalendar) {
+      Alert.alert("Error", "No se encontró calendario.");
+      return;
+    }
+
+    try {
+      const eventId = await Calendar.createEventAsync(defaultCalendar.id, {
+        title: `Reserva Coworking: ${space.nombre}`,
+        startDate: selectedDate,
+        endDate: new Date(selectedDate.getTime() + 60 * 60 * 1000),
+        location: space.ubicacion || "Nexus",
+        notes: `Reserva en espacio de coworking Nexus. ID: ${space.id}`,
+      });
+
+      addReservation({
+        id_espacio: space.id,
+        nombre: space.nombre || `Espacio ${space.id}`,
+        ubicacion: "Presencial",
+        fecha: selectedDate.toISOString(),
+        calendarEventId: eventId,
+      });
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert("Reserva agendada!", `Tu reserva fue añadida al calendario.`);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo crear el evento.");
+    }
+  };
+
+  const handleReservar = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    DateTimePickerAndroid.open({
+      value: new Date(),
+      mode: "date",
+      minimumDate: new Date(),
+      onChange: (event, selectedDate) => {
+        if (!selectedDate) return;
+        DateTimePickerAndroid.open({
+          value: selectedDate,
+          mode: "time",
+          is24Hour: true,
+          onChange: (timeEvent, selectedTime) => {
+            if (selectedTime) createCalendarEvent(selectedTime);
+          },
         });
-        
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert("¡Éxito!", "Reserva añadida a tu calendario personal.");
-      } catch (error) {
-        Alert.alert("Error", "No se pudo agendar en el calendario.");
-      }
-    } else {
-      Alert.alert("Permiso denegado", "Necesitamos acceso al calendario para agendar tu reserva.");
-    }
+      },
+    });
   };
 
-  const onDateChange = (event, selectedDate) => {
-    setShowPicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-      createCalendarEvent(selectedDate);
-    }
-  };
-
-  if (loading) {
+  if (!space) {
     return (
-      <SafeAreaView className="flex-1 bg-bgLight items-center justify-center">
+      <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center">
         <ActivityIndicator size="large" color="#4f46e5" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bgLight">
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="mx-4 bg-card rounded-nexus shadow-nexus p-5">
-          <Text className="font-headingBold text-secondary text-2xl mb-2">
-            {space.nombre || `Espacio ${space.id}`}
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <View className="px-4 py-3 flex-row items-center bg-[#f8fafc] border-b border-gray-200">
+        <Pressable
+          onPress={handleGoBack}
+          className="p-2 bg-white rounded-full shadow-sm border border-gray-100"
+        >
+          <Ionicons name="arrow-back" size={22} color="#4f46e5" />
+        </Pressable>
+        <Text className="flex-1 text-center text-gray-800 font-bold text-lg pr-10">
+          Detalle CoWorking
+        </Text>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <View className="mx-4 mt-4 bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+          <Text className="text-gray-800 font-bold text-2xl mb-4">
+            {space.nombre}
           </Text>
 
-          <View className="mb-4">
-             <Text className="font-interBold text-muted text-xs uppercase mb-1">Ubicación</Text>
-             <Text className="font-inter text-secondary">{space.location || "No disponible"}</Text>
+          <View className="gap-4">
+            <View className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <Text className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">Capacidad</Text>
+              <Text className="text-gray-700 text-base font-medium">{space.capacidad} personas</Text>
+            </View>
+
+            <View className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <Text className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">Estado</Text>
+              <Text className={`text-base font-bold ${space.ocupado ? "text-red-500" : "text-emerald-500"}`}>
+                {space.ocupado ? "Ocupado" : "Libre / Disponible"}
+              </Text>
+            </View>
+
+            <View className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <Text className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">Características</Text>
+              <Text className="text-gray-700 text-sm leading-5">
+                {Array.isArray(space.servicios) ? space.servicios.join(" • ") : space.servicios || "WiFi de alta velocidad, Café ilimitado, Aire acondicionado."}
+              </Text>
+            </View>
+
+            <View className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+              <Text className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">Precio sugerido</Text>
+              <Text className="text-indigo-600 font-extrabold text-2xl">$ {space.precio_hora || "5.00"} / hr</Text>
+            </View>
           </View>
 
-          {/* ... otros datos del espacio ... */}
-
           <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setShowPicker(true); // Abrir el selector de fecha
-            }}
-            className="bg-primary mt-4 py-3 rounded-nexus items-center"
+            onPress={handleReservar}
+            disabled={space.ocupado}
+            className={`mt-6 py-4 rounded-xl items-center shadow-sm ${space.ocupado ? "bg-gray-300" : "bg-indigo-600 active:bg-indigo-700"}`}
           >
-            <Text className="text-white font-interBold">
-              Agendar Reserva en Calendario
+            <Text className="text-white font-bold text-base">
+              {space.ocupado ? "Espacio No Disponible" : "Agendar en Calendario"}
             </Text>
           </Pressable>
-
-          {showPicker && (
-            <DateTimePicker
-              value={date}
-              mode="datetime"
-              display="default"
-              onChange={onDateChange}
-              minimumDate={new Date()}
-            />
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>

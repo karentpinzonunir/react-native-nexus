@@ -28,6 +28,8 @@ export default function TabsLayout() {
             iconName = focused ? "people" : "people-outline";
           else if (route.name === "reservations")
             iconName = focused ? "calendar" : "calendar-outline";
+          else if (route.name === "profile")
+            iconName = focused ? "person" : "person-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -35,8 +37,9 @@ export default function TabsLayout() {
       <Tabs.Screen name="home" options={{ title: "Inicio" }} />
       <Tabs.Screen name="search" options={{ title: "Buscar" }} />
       <Tabs.Screen name="ebooks" options={{ title: "Tienda" }} />
-      <Tabs.Screen name="coworking" options={{ title: "Cowork" }} />
+      <Tabs.Screen name="coworking" options={{ title: "Coworking" }} />
       <Tabs.Screen name="reservations" options={{ title: "Mis Reservas" }} />
+      <Tabs.Screen name="profile" options={{ title: "Perfil" }} />
       <Tabs.Screen name="(stack)" options={{ href: null }} />
     </Tabs>
   );

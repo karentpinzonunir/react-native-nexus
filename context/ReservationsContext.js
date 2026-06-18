@@ -1,41 +1,47 @@
 import React, { createContext, useState, useContext } from 'react';
+import * as Calendar from 'expo-calendar';
 
-// Creamos el contexto
 const ReservationsContext = createContext();
 
-// Proveedor del contexto
 export const ReservationsProvider = ({ children }) => {
   const [myReservations, setMyReservations] = useState([]);
 
-  // Función para añadir una reserva a la lista
-  const addReservation = (newReservation) => {
-    // newReservation debe ser un objeto con: id_espacio, nombre, fecha, ubicacion
-    setMyReservations((prev) => [
-      {
-        id_interna: Date.now(), // ID único para el listado en memoria
-        ...newReservation
-      },
-      ...prev // Las más nuevas aparecen primero
+  const addReservation = (reservation) => {
+    setMyReservations(prev => [
+      ...prev,
+      { 
+        ...reservation, 
+        id_interna: Date.now().toString() 
+      }
     ]);
   };
 
-  // Función para cancelar/eliminar (opcional, por si quieres puntos extra)
-  const removeReservation = (idInterna) => {
-    setMyReservations((prev) => prev.filter(res => res.id_interna !== idInterna));
+  const removeReservation = async (id_interna) => {
+    // Busca la reserva que vamos a eliminar
+    const toDelete = myReservations.find(r => r.id_interna === id_interna);
+
+    if (toDelete?.calendarEventId) {
+      try {
+        // 🔴 Borra el evento del calendario nativo del celular
+        await Calendar.deleteEventAsync(toDelete.calendarEventId);
+        console.log("Evento eliminado del calendario");
+      } catch (err) {
+        // Si ya fue borrado manualmente o no existe, no crashea la app
+        console.log("No se pudo borrar del calendario (quizá ya no existía)");
+      }
+    }
+
+    // Borra de nuestra memoria interna
+    setMyReservations(prev => prev.filter(r => r.id_interna !== id_interna));
   };
 
   return (
-    <ReservationsContext.Provider value={{ myReservations, addReservation, removeReservation }}>
+    <ReservationsContext.Provider 
+      value={{ myReservations, addReservation, removeReservation }}
+    >
       {children}
     </ReservationsContext.Provider>
   );
 };
 
-// Hook personalizado para usar las reservas fácilmente
-export const useReservations = () => {
-  const context = useContext(ReservationsContext);
-  if (!context) {
-    throw new Error('useReservations debe usarse dentro de un ReservationsProvider');
-  }
-  return context;
-};
+export const useReservations = () => useContext(ReservationsContext);

@@ -16,7 +16,7 @@ export default function HomeScreen() {
         ListHeaderComponent={
           <View className="px-4 pt-6 pb-4">
             {/* Header */}
-            <Text className="font-headingBold text-secondary text-2xl mb-1">
+            <Text className="font-headingBold text-secondary text-3xl mb-1">
               Top 10 Destacados
             </Text>
             <Text className="font-inter text-muted text-sm">
@@ -48,7 +48,10 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <BookCard
             book={item}
-            onPress={(book) => router.push(`/(tabs)/(stack)/books/${book.id}`)}
+            onPress={(book) => router.push({
+              pathname: `/books/${book.id}`,
+              params: { from: 'home' }
+            })}
           />
         )}
         contentContainerStyle={{ paddingBottom: 20 }}

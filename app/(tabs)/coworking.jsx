@@ -1,71 +1,52 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CoWorkingCard from '../../components/CoWorkingCard';
-import { useCoworking } from '../../hooks/useCoworking';
+import React, { useEffect } from "react";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useCoworking } from "../../hooks/useCoworking";
+import CoWorkingCard from "../../components/CoWorkingCard";
 
-export default function CoWorkingScreen() {
-    const { coworkings, loading, error, getCoworkings } = useCoworking();
+export default function CoworkingScreen() {
+    const { coworkings, loading, error, reload } = useCoworking();
 
-    const freeSpaces = getCoworkings(false);
-    const occupiedSpaces = getCoworkings(true);
+    useEffect(() => {
+        reload();
+    }, []);
 
     return (
-        <SafeAreaView className="flex-1 bg-bgLight">
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-                {/* Sección: Disponibles */}
-                <View className="px-4 pt-6 pb-2">
-                    <View className="flex-row items-center gap-2 mb-2">
-                        <View className="w-3 h-3 rounded-full bg-emerald-500" />
-                        <Text className="font-headingBold text-secondary text-xl">
-                            Espacios Disponibles ({freeSpaces.length})
+        <SafeAreaView className="flex-1 bg-gray-50">
+            <FlatList
+                data={coworkings}
+                keyExtractor={(item) => item.id.toString()}
+                ListHeaderComponent={
+                    <View className="px-4 pt-6 pb-4">
+                        {/* Header idéntico al Home */}
+                        <Text className="font-headingBold text-secondary text-3xl mb-1">
+                            Espacios de CoWorking
                         </Text>
-                    </View>
-
-                    {loading && (
-                        <View className="items-center py-6">
-                            <Text className="font-inter text-muted">Consultando disponibilidad...</Text>
-                        </View>
-                    )}
-
-                    {error && (
-                        <View className="mx-4 bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
-                            <Text className="text-red-600 font-interBold">¡Ups!</Text>
-                            <Text className="text-red-500 font-inter text-sm">{error}</Text>
-                        </View>
-                    )}
-
-                    {!loading && freeSpaces.length === 0 && (
-                        <View className="px-4 py-6">
-                            <Text className="font-inter text-muted">No hay espacios libres en este momento.</Text>
-                        </View>
-                    )}
-
-                    {!loading && freeSpaces.map((space) => (
-                        <CoWorkingCard key={space.id} coworking={space} />
-                    ))}
-                </View>
-
-                {/* Sección: Ocupados */}
-                <View className="px-4 pt-4 pb-2">
-                    <View className="flex-row items-center gap-2 mb-2">
-                        <View className="w-3 h-3 rounded-full bg-red-500" />
-                        <Text className="font-headingBold text-secondary text-xl">
-                            En Uso ({occupiedSpaces.length})
+                        <Text className="font-inter text-muted text-sm">
+                            Reserva tu lugar de trabajo ideal y potencia tu productividad.
                         </Text>
+
+                        {error && (
+                            <View className="bg-red-100 border border-red-300 rounded-lg p-3 mt-4">
+                                <Text className="text-red-600 font-bold text-sm">¡Ups!</Text>
+                                <Text className="text-red-500 text-sm">{error}</Text>
+                            </View>
+                        )}
+
+                        {loading && (
+                            <View className="items-center py-10">
+                                <ActivityIndicator size="large" color="#4f46e5" />
+                                <Text className="text-gray-500 text-sm mt-3 font-medium">
+                                    Buscando espacios disponibles...
+                                </Text>
+                            </View>
+                        )}
                     </View>
-
-                    {!loading && occupiedSpaces.length === 0 && (
-                        <View className="px-4 py-6">
-                            <Text className="font-inter text-muted">Todos los espacios están desocupados.</Text>
-                        </View>
-                    )}
-
-                    {!loading && occupiedSpaces.map((space) => (
-                        <CoWorkingCard key={space.id} coworking={space} />
-                    ))}
-                </View>
-            </ScrollView>
+                }
+                renderItem={({ item }) => <CoWorkingCard coworking={item} />}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                showsVerticalScrollIndicator={false}
+            />
         </SafeAreaView>
     );
 }
